@@ -103,6 +103,32 @@ public class AccountService implements com.example.accounts.service.AccountServi
         return true;
     }
 
+    @Override
+    public boolean deleteAccount(String mobileNumber) {
+
+        // Find customer using mobile number
+        Customer customer = customerRepository
+                .findByMobileNumber(mobileNumber)
+                .orElseThrow(
+                        ()-> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+                );
+
+        // Find account belonging to the customer
+        Account account = accountRepository
+                .findByCustomerId(customer.getCustomerId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+                );
+
+        // Delete the account first because it depends on the customer
+        accountRepository.deleteById(account.getAccountNumber());
+
+        // Delete the customer
+        customerRepository.deleteById(account.getCustomerId());
+
+        return true;
+    }
+
     /**
      *
      * @param customer - Customer Object

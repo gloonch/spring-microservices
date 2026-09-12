@@ -24,4 +24,11 @@ public interface AccountService {
      * @return true if update is successful
      */
     boolean updateAccount(CustomerDTO customerDTO);
+
+    /**
+     *
+     * @param mobileNumber
+     * @return true if deletion is successful
+     */
+    boolean deleteAccount(String mobileNumber);
 }
