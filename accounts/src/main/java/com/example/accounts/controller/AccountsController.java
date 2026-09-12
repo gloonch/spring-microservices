@@ -21,10 +21,19 @@ public class AccountsController {
     private AccountService accountService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> createAccount(@Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<ResponseDTO> createAccount(@RequestBody CustomerDTO customerDTO) {
         accountService.createAccount(customerDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDTO(AccountConstants.STATUS_201, AccountConstants.MESSAGE_201));
+    }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<CustomerDTO> fetchAccountDetails(@RequestParam String mobileNumber) {
+        CustomerDTO customerDTO = accountService.fetchAccount(mobileNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customerDTO);
+
     }
 }

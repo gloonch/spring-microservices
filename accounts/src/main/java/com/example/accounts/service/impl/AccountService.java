@@ -7,6 +7,8 @@ import com.example.accounts.dto.CustomerDTO;
 import com.example.accounts.entity.Account;
 import com.example.accounts.entity.Customer;
 import com.example.accounts.exception.CustomerAlreadyExistsException;
+import com.example.accounts.exception.ResourceNotFoundException;
+import com.example.accounts.mapper.AccountMapper;
 import com.example.accounts.mapper.CustomerMapper;
 import com.example.accounts.repository.AccountRepository;
 import com.example.accounts.repository.CustomerRepository;
@@ -41,6 +43,25 @@ public class AccountService implements com.example.accounts.service.AccountServi
         customer.setCreatedBy("Anonymous");
         Customer savedCustomer = customerRepository.save(customer);
         accountRepository.save(createAccount(savedCustomer));
+    }
+
+    /**
+     *
+     * @param mobileNumber - Input mobile number
+     * @return Account details based on a given mobileNumber
+     */
+    @Override
+    public CustomerDTO fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                ()-> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                ()-> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        );
+        CustomerDTO customerDTO = CustomerMapper.mapToCustomerDTO(customer, new CustomerDTO());
+        customerDTO.setAccountDTO(AccountMapper.mapToAccountDTO(account, new AccountDTO()));
+
+        return customerDTO;
     }
 
     /**

@@ -10,4 +10,11 @@ public interface AccountService {
      * @param customerDTO - CustomerDTO Object
      */
     void createAccount(CustomerDTO customerDTO);
+
+    /**
+     *
+     * @param mobileNumber - Input mobile number
+     * @return Account Details based on a given mobileNumber
+     */
+    CustomerDTO fetchAccount(String mobileNumber);
 }
