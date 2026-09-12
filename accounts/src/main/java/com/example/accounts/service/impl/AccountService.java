@@ -15,7 +15,6 @@ import com.example.accounts.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -62,6 +61,46 @@ public class AccountService implements com.example.accounts.service.AccountServi
         customerDTO.setAccountDTO(AccountMapper.mapToAccountDTO(account, new AccountDTO()));
 
         return customerDTO;
+    }
+
+    /**
+     *
+     * @param customerDTO - CustomerDTO Object
+     * @return boolean indicating if update was successful
+     */
+    @Override
+    public boolean updateAccount(CustomerDTO customerDTO) {
+
+        // Find the existing customer using the mobile number
+        Customer customer = customerRepository
+                .findByMobileNumber(customerDTO.getMobileNumber())
+                .orElseThrow(
+                        ()-> new ResourceNotFoundException("Customer", "mobileNumber", customerDTO.getMobileNumber())
+                );
+
+        // Update customer information using the mapper
+        CustomerMapper.mapToCustomer(customerDTO, customer);
+
+        if (customerDTO.getAccountDTO() != null) {
+
+            // Save updated customer
+            customerRepository.save(customer);
+
+            // Find the account connected to this customer
+            Account account = accountRepository
+                    .findByCustomerId(customer.getCustomerId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+                    );
+
+            // Update account information if accountDTO exists
+            AccountMapper.mapToAccounts(customerDTO.getAccountDTO(), account);
+
+            // Save updated account
+            accountRepository.save(account);
+        }
+
+        return true;
     }
 
     /**

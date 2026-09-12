@@ -17,4 +17,11 @@ public interface AccountService {
      * @return Account Details based on a given mobileNumber
      */
     CustomerDTO fetchAccount(String mobileNumber);
+
+    /**
+     *
+     * @param customerDTO - CustomerDTO Object
+     * @return true if update is successful
+     */
+    boolean updateAccount(CustomerDTO customerDTO);
 }
